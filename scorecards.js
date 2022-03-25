@@ -26,13 +26,20 @@ function getMatchDetails(html){
     let venueOfMatch = descArr[1];
     // 2) get date
     let dateOfMatch = descArr[2];
-    console.log(venueOfMatch);
-    console.log(dateOfMatch);
+    console.log("Venue of the match :-",venueOfMatch);
+    console.log("Date of the match :-",dateOfMatch);
     // 3) get team names
+    let teamNames = selecTool('.name-detail>.name-link');
+    // console.log(teamNames.text());
+    let team1 = selecTool(teamNames[0]).text();
+    let team2 = selecTool(teamNames[1]).text();
+    console.log("Teams are :-");
+    console.log(team1);
+    console.log(team2);
     // 4) get result
     let matchResElem = selecTool(".match-info.match-info-MATCH.match-info-MATCH-half-width>.status-text");
     let resultOfMatch = matchResElem.text()
-    console.log(resultOfMatch);
+    console.log("Result of the match :- ",resultOfMatch);
 }
 module.exports = {
     gifs:getInfoFromScorecard,
