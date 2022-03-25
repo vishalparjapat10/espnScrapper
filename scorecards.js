@@ -40,6 +40,26 @@ function getMatchDetails(html){
     let matchResElem = selecTool(".match-info.match-info-MATCH.match-info-MATCH-half-width>.status-text");
     let resultOfMatch = matchResElem.text()
     console.log("Result of the match :- ",resultOfMatch);
+
+    // 5) get innings
+    let allBatsmenTable = selecTool('.table.batsman tbody>tr');
+    // console.log(allBatsmenRows.text());
+    let htmlString = "";
+    let count = 0;
+    for(let i = 0;i < allBatsmenTable.length;i++){
+        htmlString += selecTool(allBatsmenTable[i]).html();
+        console.log(count);
+        let allRows = selecTool(allBatsmenTable[i]).find("tr");//Get the descendants(table rows) of each element(table) i.e this will get all <tr> in an ith table
+        for(let j = 0;j < allRows.length;j++){
+            let row = selecTool(allRows[j]);
+            let firstColumnOfRow = row.find("td")[0];
+            // hasClass() :- check to see if any of the matched elements have the given className
+            if(selecTool(firstColumnOfRow).hasClass("batsman-cell")){
+                console.log(count);
+                count++;
+            }
+        }
+    }
 }
 module.exports = {
     gifs:getInfoFromScorecard,
