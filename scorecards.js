@@ -18,36 +18,56 @@ function cb(err,res,body){
 function getMatchDetails(html){
 
     let selecTool = cheerio.load(html);
-
-    // 1) get venue
+    
     let desc = selecTool(".match-header-info.match-info-MATCH");
-    // console.log(desc.text().split(',')[1]);
+    // 1) get match no
+    let whichMatch = desc.text().split(',')[0];
+    const newL = whichMatch.slice(6);
+    if(newL.split(' ')[0].length == 3 || newL.split(' ')[0].length == 4){
+        if(newL.split(' ')[0].length == 3){
+            // console.log(whichMatch.split(' ')[0]);
+            whichMatch = whichMatch.slice(6,15);
+        }
+        else if(newL.split(' ')[0].length == 4){
+            whichMatch = whichMatch.slice(6,16);
+        }
+    }
+    else if(whichMatch.includes('Final')){
+        whichMatch = whichMatch.slice(6,11);
+    }
+    else if(whichMatch.includes('Qualifier')){
+        whichMatch = whichMatch.slice(6,17);
+    }
+    else if(whichMatch.includes('Eliminator')){
+        whichMatch = whichMatch.slice(6,16);
+    }
+    console.log(whichMatch);
+
+    // 2) get team names
+    let teamNames = selecTool('.name-detail>.name-link');
+    let team1 = selecTool(teamNames[0]).text();
+    let team2 = selecTool(teamNames[1]).text();
+    console.log(`${team1} vs ${team2}`);
+    // 3) get venue
     let descArr = desc.text().split(',');
     let venueOfMatch = descArr[1];
-    // 2) get date
+    // 4) get date
     let dateOfMatch = descArr[2];
     console.log("Venue of the match :-",venueOfMatch);
     console.log("Date of the match :-",dateOfMatch);
-    // 3) get team names
-    let teamNames = selecTool('.name-detail>.name-link');
-    // console.log(teamNames.text());
-    let team1 = selecTool(teamNames[0]).text();
-    let team2 = selecTool(teamNames[1]).text();
-    console.log("Teams are :-");
-    console.log(team1);
-    console.log(team2);
-    // 4) get result
+    // 5) get result
     let matchResElem = selecTool(".match-info.match-info-MATCH.match-info-MATCH-half-width>.status-text");
     let resultOfMatch = matchResElem.text()
     console.log("Result of the match :- ",resultOfMatch);
 
-    // 5) get innings
+    // 6) get innings
     let allBatsmenTable = selecTool('.table.batsman tbody');
     // console.log(allBatsmenRows.text());
     let htmlString = "";
     let count = 0;
     for(let i = 0;i < allBatsmenTable.length;i++){
         htmlString += selecTool(allBatsmenTable[i]).html();
+        console.log("Innings of team ",selecTool(teamNames[i]).text()+" :-");
         let allRows = selecTool(allBatsmenTable[i]).find("tr");//Get the descendants(table rows) of each element(table) i.e this will get all <tr> in an ith table
         for(let j = 0;j < allRows.length;j++){
             let row = selecTool(allRows[j]);

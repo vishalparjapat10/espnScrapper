@@ -22,7 +22,6 @@ function extractAllMatchLink(html){
 
     // we get these selectors by actually inspecting the element on the website we are scrapping. We look for unique selector for the element we need 
     let scoreCardElemArr = selecTool('a[data-hover="Scorecard"]');
-    console.log(scoreCardElemArr.length);
 
     for(let i = 0;i < scoreCardElemArr.length;i++){
         let scoreCardLink = selecTool(scoreCardElemArr[i]).attr('href');// if scoreCardElemArr is only a single element then we need not to use selecTool(scoreCardElemArr) in this, we can directly use scoreCardElement.attr()
