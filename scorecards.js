@@ -1,5 +1,8 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
+const xlsx = require('xlsx');
 
 function getInfoFromScorecard(url){
     // Now we have link of the scorecard of a match, we want to get html pf that scorecard
@@ -64,7 +67,7 @@ function getMatchDetails(html){
     let allBatsmenTable = selecTool('.table.batsman tbody');
     // console.log(allBatsmenRows.text());
     let htmlString = "";
-    let count = 0;
+    
     for(let i = 0;i < allBatsmenTable.length;i++){
         htmlString += selecTool(allBatsmenTable[i]).html();
         console.log("Innings of team ",selecTool(teamNames[i]).text()+" :-");
@@ -81,10 +84,51 @@ function getMatchDetails(html){
                 let numOf6 = selecTool(row.find("td")[6]).text();
                 let sr = selecTool(row.find("td")[7]).text();
 
-               console.log(`${playerName} | ${runs} runs | ${balls} balls | ${numOf4} 4's | ${numOf6} 6's | ${sr} strike rate`);
+            //    console.log(`${playerName} | ${runs} runs | ${balls} balls | ${numOf4} 4's | ${numOf6} 6's | ${sr} strike rate`);
+
+            processInformation(dateOfMatch,venueOfMatch,resultOfMatch,team1,team2,playerName,runs,balls,numOf4,numOf6,sr);
             }
         }
     }
+
+    function processInformation(dateOfMatch,venueOfMatch,resultOfMatch,team1,team2,playerName,runs,balls,numOf4,numOf6,sr){
+        let teamNamePath = path.join(__dirname,"IPL",team1);
+        if(!fs.existsSync(teamNamePath)){
+            fs.mkdirSync(teamNamePath);
+        }
+        let playerPath = path.join(teamNamePath,playerName+".xlsx");
+        let content = excelReader(playerPath,playerName);
+
+        let playerObj = {
+            dateOfMatch,
+            venueOfMatch,
+            resultOfMatch,
+            team1,
+            team2,
+            playerName,
+            runs,
+            balls,
+            numOf4,
+            numOf6,
+            sr
+        }
+        content.push(playerObj);
+        excelWriter(playerPath,content),playerName;
+    }
+
+    function excelReader(playerPath,playerName){
+        if(!fs.existsSync(playerPath)){
+            return [];
+        }
+    }
+
+    function excelWriter(playerPath,jsObject,sheetName){
+        let newWorkBook = xlsx.utils.book_new();// from this we wil get new excel file/book
+        let newWorkSheet = xlsx.utils.json_to_sheet(jsonData);// converts an array of JS objects to a worksheet,[{}]
+        xlsx.utils.book_append_sheet(newWorkBook,newWorkSheet,sheetName);// it will create/append new sheet to the same excel sheet
+        xlsx.writeFile(newWorkBook,playerPath);// now it will move this workbook we hve created at the path playerPath
+    }
+    
 }
 module.exports = {
     gifs:getInfoFromScorecard,

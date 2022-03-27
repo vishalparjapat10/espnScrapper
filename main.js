@@ -1,5 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const path = require('path');
+const fs = require('fs');
 
 const getAllMatcheObj = require('./allMatches');
 let url = "https://www.espncricinfo.com/series/ipl-2020-21-1210595"
@@ -13,6 +15,11 @@ function cb(err,res,body){
     else{
         handleHtml(body);
     }
+}
+
+let iplPath = path.join(__dirname,"IPL");//__dirname prints the current path of the file in which we are using this
+if(!fs.existsSync(iplPath)){
+    fs.mkdirSync(iplPath);
 }
 
 function handleHtml(html){
